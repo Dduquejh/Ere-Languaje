@@ -1,14 +1,12 @@
 
 public class Lexer {
-    private String input;
     private int position;
 
-    Lexer(String input) {
-        this.input = input;
+    Lexer() {
         this.position = 0;
     }
 
-    protected void nextToken() {
+    protected void nextToken(String input) {
         while (position < input.length()) {
             char currentChar = input.charAt(position);
             if (currentChar == '=') {
@@ -46,5 +44,10 @@ public class Lexer {
                 position++;
             }
         }
+    }
+
+    public static void main(String[] args) {
+        Lexer manin = new Lexer();
+        manin.nextToken("asnkandf354684!#$%#$&//><<");
     }
 }
