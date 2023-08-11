@@ -1,6 +1,10 @@
+import java.util.HashMap;
+import java.util.Map;
+
 enum TokenType{
     ASSING,
     COMMA,
+    CONSTANT,
     DIF,
     ELSE,
     EOF,
@@ -33,5 +37,14 @@ public class Token{
     Token(TokenType type, String value) {
         this.type = type;
         this.value = value;
+    }
+
+    private static final Map<String, TokenType> KEYWORDS = new HashMap<>();
+    static {
+        KEYWORDS.put("funcion", TokenType.FUNCTION);
+        KEYWORDS.put("si", TokenType.IF);
+        KEYWORDS.put("si-no", TokenType.ELSE);
+        KEYWORDS.put("constante", TokenType.CONSTANT);
+        KEYWORDS.put("variable", TokenType.LET);
     }
 }
