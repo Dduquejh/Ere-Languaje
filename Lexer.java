@@ -45,9 +45,4 @@ public class Lexer {
             }
         }
     }
-
-    public static void main(String[] args) {
-        Lexer manin = new Lexer();
-        manin.nextToken("asnkandf354684!#$%#$&//><<");
-    }
 }
