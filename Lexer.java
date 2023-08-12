@@ -29,7 +29,13 @@ public class Lexer {
                 position++;
             } else if (Character.isLetter(currentChar)) {
                 String cadena = readCharacter(input, position);
-                System.out.println("(" + TokenType.IDENTIFIER + "): " + cadena);
+                // Verificar si la cadena es una palabra clave
+                if (Token.KEYWORDS.containsKey(cadena)) {
+                    TokenType keywordType = Token.KEYWORDS.get(cadena);
+                    System.out.println("(" + keywordType + "): " + cadena);
+                } else {
+                    System.out.println("(" + TokenType.IDENTIFIER + "): " + cadena);
+                }
                 position += cadena.length();
             } else if (Character.isDigit(currentChar)) {
                 System.out.println("(" + TokenType.INTEGER + "): " + currentChar);
