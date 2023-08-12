@@ -39,7 +39,7 @@ public class Token{
         this.value = value;
     }
 
-    private static final Map<String, TokenType> KEYWORDS = new HashMap<>();
+    public static final Map<String, TokenType> KEYWORDS = new HashMap<>();
     static {
         KEYWORDS.put("funcion", TokenType.FUNCTION);
         KEYWORDS.put("si", TokenType.IF);
