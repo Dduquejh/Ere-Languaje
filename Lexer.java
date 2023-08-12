@@ -42,6 +42,18 @@ public class Lexer {
                     System.out.println("(" + TokenType.LT + "): " + currentChar);
                     position++;
                 }
+            } else if (currentChar == '(') {
+                System.out.println("(" + TokenType.LPAREN + "): " + currentChar);
+                position++;
+            } else if (currentChar == ')') {
+                System.out.println("(" + TokenType.RPAREN + "): " + currentChar);
+                position++;
+            } else if (currentChar == '{') {
+                System.out.println("(" + TokenType.LBRACE + "): " + currentChar);
+                position++;
+            } else if (currentChar == '}') {
+                System.out.println("(" + TokenType.RBRACE + "): " + currentChar);
+                position++;
             } else if (Character.isLetter(currentChar)) {
                 String cadena = readCharacter(input, position);
                 // Verificar si la cadena es una palabra clave
