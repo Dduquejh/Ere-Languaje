@@ -2,13 +2,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
+    private String input;
     private int position;
 
-    Lexer() {
+    Lexer(String input) {
+        this.input = input;
         this.position = 0;
     }
 
-    protected List<Token> nextToken(String input) {
+    protected List<Token> nextToken() {
         List<Token> tokens = new ArrayList<>();
         while (position < input.length()) {
             Token token = null;
