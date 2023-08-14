@@ -59,8 +59,13 @@ public class Token {
     static {
         KEYWORDS.put("funcion", TokenType.FUNCTION);
         KEYWORDS.put("si", TokenType.IF);
-        KEYWORDS.put("si-no", TokenType.ELSE);
+        KEYWORDS.put("sino", TokenType.ELSE);
         KEYWORDS.put("constante", TokenType.CONSTANT);
         KEYWORDS.put("variable", TokenType.LET);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + type + "): " + value ;
     }
 }
