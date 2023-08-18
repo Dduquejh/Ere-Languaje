@@ -28,6 +28,9 @@ enum TokenType {
     RBRACE,
     RPAREN,
     SEMICOLON,
+    DOT,
+    DIVIDE,
+    MULTIPLY
 }
 
 public class Token {
@@ -66,6 +69,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "(" + type + "): " + value ;
+        return "(" + type + "): " + value;
     }
 }

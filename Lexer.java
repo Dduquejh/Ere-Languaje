@@ -29,6 +29,15 @@ public class Lexer {
             } else if (currentChar == '-') {
                 token = new Token(TokenType.MINUS, String.valueOf(currentChar));
                 position++;
+            } else if (currentChar == '/') {
+                token = new Token(TokenType.DIVIDE, String.valueOf(currentChar));
+                position++;
+            } else if (currentChar == '*') {
+                token = new Token(TokenType.MULTIPLY, String.valueOf(currentChar));
+                position++;
+            } else if (currentChar == '.') {
+                token = new Token(TokenType.DOT, String.valueOf(currentChar));
+                position++;
             } else if (currentChar == ',') {
                 token = new Token(TokenType.COMMA, String.valueOf(currentChar));
                 position++;
@@ -122,7 +131,8 @@ public class Lexer {
                 if (!decimalPointEncountered) {
                     digitBeforeDecimal = true;
                 }
-            } else if (currentChar == '.' && !decimalPointEncountered && digitBeforeDecimal) {
+            } else if (currentChar == '.' && !decimalPointEncountered && digitBeforeDecimal
+                    && position != input.length() - 1) {
                 if (Character.isDigit(input.charAt(position + 1))) {
                     cadena += currentChar;
                     decimalPointEncountered = true;
