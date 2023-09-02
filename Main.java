@@ -5,7 +5,7 @@ public class Main {
     }
 
     public static void pantallaBienvenida() {
-        System.out.println("Bienvenido al lenguaje");
+        System.out.println("Bienvenido al interprete");
         String[] letras = {
             "*****", "*    ", "*****", "*    ", "*    ", "*****",   // E
             "**** ", "*   *", "**** ", "*  * ", "*   *", "*   *"    // R

@@ -35,11 +35,11 @@ enum TokenType {
 
 public class Token {
     TokenType type;
-    String value;
+    String tokenLiteral;
 
-    Token(TokenType type, String value) {
+    Token(TokenType type, String tokenLiteral) {
         this.type = type;
-        this.value = value;
+        this.tokenLiteral = tokenLiteral;
     }
 
     public TokenType getType() {
@@ -50,12 +50,12 @@ public class Token {
         this.type = type;
     }
 
-    public String getValue() {
-        return value;
+    public String TokenLiteral() {
+        return tokenLiteral;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(String tokenLiteral) {
+        this.tokenLiteral = tokenLiteral;
     }
 
     public static final Map<String, TokenType> KEYWORDS = new HashMap<>();
@@ -69,6 +69,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "(" + type + "): " + value;
+        return "(" + type + "): " + tokenLiteral;
     }
 }
