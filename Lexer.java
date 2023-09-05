@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class Lexer {
     private String input;
     private int position;
@@ -10,10 +7,10 @@ public class Lexer {
         this.position = 0;
     }
 
-    protected List<Token> nextToken() {
-        List<Token> tokens = new ArrayList<>();
+    protected Token nextToken() {
+        Token token = null;
         while (position < input.length()) {
-            Token token = null;
+            token = null;
             char currentChar = input.charAt(position);
             if (currentChar == ' ') {
                 position++;
@@ -103,11 +100,11 @@ public class Lexer {
                 token = new Token(TokenType.ILLEGAL, String.valueOf(currentChar));
                 position++;
             }
-            if (token != null) {
-                tokens.add(token);
+            if (token != null && position != input.length()-1) {
+                return token;
             }
         }
-        return tokens;
+        return token;
     }
 
     protected String readCharacter(String input, int position) {

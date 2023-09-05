@@ -15,14 +15,9 @@ public class Repl {
 
             Lexer lexer = new Lexer(source);
 
-            List<Token> tokens = lexer.nextToken(); // Obtener la lista de tokens
+            Token tokens = lexer.nextToken(); // Se obtiene el token
 
-            for (Token token : tokens) {
-                if (token.getType() == TokenType.EOF) { // Verificar si es el token de EOF
-                    break;
-                }
-            System.out.println(token);
-            }
+            System.out.println(tokens); // Se imprime el token
         }
 
         scanner.close();
