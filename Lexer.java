@@ -10,8 +10,8 @@ public class Lexer {
     protected Token nextToken() {
         Token token = null;
         while (position < input.length()) {
-            token = null;
             char currentChar = input.charAt(position);
+    
             if (currentChar == ' ') {
                 position++;
             } else if (currentChar == '=') {
@@ -39,7 +39,7 @@ public class Lexer {
                 token = new Token(TokenType.COMMA, String.valueOf(currentChar));
                 position++;
             } else if (currentChar == ';') {
-                token = new Token(TokenType.EOF, String.valueOf(currentChar));
+                token = new Token(TokenType.SEMICOLON, String.valueOf(currentChar));
                 position++;
             } else if (currentChar == '>') {
                 if (position + 1 < input.length() && input.charAt(position + 1) == '=') {
@@ -87,11 +87,6 @@ public class Lexer {
                 // float
                 if (cadena.contains(".")) {
                     token = new Token(TokenType.FLOAT, cadena);
-                }
-                // Verificar si la cadena es un número clave
-                else if (Token.KEYWORDS.containsKey(cadena)) {
-                    TokenType keywordType = Token.KEYWORDS.get(cadena);
-                    token = new Token(keywordType, cadena);
                 } else {
                     token = new Token(TokenType.INTEGER, cadena);
                 }
@@ -100,12 +95,14 @@ public class Lexer {
                 token = new Token(TokenType.ILLEGAL, String.valueOf(currentChar));
                 position++;
             }
-            if (token != null && position != input.length()-1) {
+    
+            if (token != null) {
                 return token;
             }
         }
         return token;
     }
+    
 
     protected String readCharacter(String input, int position) {
         String cadena = "";

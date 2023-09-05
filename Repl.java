@@ -1,8 +1,8 @@
-import java.util.List;
+
 import java.util.Scanner;
 
 public class Repl {
-    public static void starRepel() {
+    public static void startRepl() {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -14,10 +14,14 @@ public class Repl {
             }
 
             Lexer lexer = new Lexer(source);
+            Token token;
 
-            Token tokens = lexer.nextToken(); // Se obtiene el token
-
-            System.out.println(tokens); // Se imprime el token
+            do {
+                token = lexer.nextToken();
+                if (token != null) {
+                    System.out.println(token);
+                }
+            } while (token != null && token.getType() != TokenType.EOF);
         }
 
         scanner.close();

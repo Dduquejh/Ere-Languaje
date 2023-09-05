@@ -1,7 +1,7 @@
 public class Main {
     public static void main(String[] args) {
         pantallaBienvenida();
-        Repl.starRepel();
+        Repl.startRepl();;
     }
 
     public static void pantallaBienvenida() {
