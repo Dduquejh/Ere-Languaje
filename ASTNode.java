@@ -182,26 +182,19 @@ class Prefix extends Expression {
 }
 
 class Infix extends Expression {
-    private Expression left;
-    private String operator;
-    private Expression right;
+    private String formattedExpression; // Nuevo campo para almacenar la expresión con paréntesis.
 
-    public Infix(Token token, Expression left, String operator, Expression right) {
+    public Infix(Token token, String formattedExpression) {
         super(token);
-        this.left = left;
-        this.operator = operator;
-        this.right = right;
-    }
-
-    public void setRight(Expression right) {
-        this.right = right;
+        this.formattedExpression = formattedExpression;
     }
 
     @Override
     public String toString() {
-        return left.toString() + " " + operator + " " + right != null ? right.toString() : "null";
+        return formattedExpression; // Devuelve la expresión con paréntesis.
     }
 }
+
 
 class BooleanExpression extends Expression {
     private Boolean value;

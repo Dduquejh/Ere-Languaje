@@ -23,9 +23,19 @@ public class Repl {
                     System.out.println(token);
                     System.out.println(program);
                 }
+                if (!parser.getErrors().isEmpty()) {
+                    for (String error : parser.getErrors()) {
+                        System.out.println(error);
+                    }
+                } else {
+                    for (Statement statement : program.getStatements()) {
+                        System.out.println(statement.toString());
+                    }
+                }
             } while (token != null && token.getType() != TokenType.EOF);
         }
 
         scanner.close();
     }
 }
+
