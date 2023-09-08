@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 
 public class Repl {
@@ -14,12 +13,15 @@ public class Repl {
             }
 
             Lexer lexer = new Lexer(source);
-            Token token;
+            Parser parser = new Parser(lexer);
 
+            Program program = parser.parseProgram(parser);
+            Token token;
             do {
                 token = lexer.nextToken();
                 if (token != null) {
                     System.out.println(token);
+                    System.out.println(program);
                 }
             } while (token != null && token.getType() != TokenType.EOF);
         }

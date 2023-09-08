@@ -1,14 +1,15 @@
 public class Main {
     public static void main(String[] args) {
         pantallaBienvenida();
-        Repl.startRepl();;
+        Repl.startRepl();
+        ;
     }
 
     public static void pantallaBienvenida() {
         System.out.println("Bienvenido al interprete");
         String[] letras = {
-            "*****", "*    ", "*****", "*    ", "*    ", "*****",   // E
-            "**** ", "*   *", "**** ", "*  * ", "*   *", "*   *"    // R
+                "*****", "*    ", "*****", "*    ", "*    ", "*****", // E
+                "**** ", "*   *", "**** ", "*  * ", "*   *", "*   *" // R
         };
 
         String mensaje = "ERE";

@@ -4,13 +4,14 @@ import java.util.Map;
 enum TokenType {
     ASSING,
     COMMA,
-    CONSTANT,
     DIF,
     ELSE,
     EOF,
     EQ,
+    FALSE,
     FUNCTION,
     IDENTIFIER,
+    IDENT,
     IF,
     GT,
     GTE,
@@ -26,11 +27,13 @@ enum TokenType {
     NEGATION,
     PLUS,
     RBRACE,
+    RETURN,
     RPAREN,
     SEMICOLON,
     DOT,
     DIVIDE,
-    MULTIPLY
+    MULTIPLY,
+    TRUE
 }
 
 public class Token {
@@ -63,8 +66,10 @@ public class Token {
         KEYWORDS.put("funcion", TokenType.FUNCTION);
         KEYWORDS.put("si", TokenType.IF);
         KEYWORDS.put("sino", TokenType.ELSE);
-        KEYWORDS.put("constante", TokenType.CONSTANT);
         KEYWORDS.put("variable", TokenType.LET);
+        KEYWORDS.put("vuelve", TokenType.RETURN);
+        KEYWORDS.put("cierto", TokenType.TRUE);
+        KEYWORDS.put("mentira", TokenType.FALSE);
     }
 
     @Override
