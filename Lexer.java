@@ -15,11 +15,21 @@ public class Lexer {
             if (currentChar == ' ') {
                 position++;
             } else if (currentChar == '=') {
-                token = new Token(TokenType.ASSING, String.valueOf(currentChar));
-                position++;
+                if (position + 1 < input.length() && input.charAt(position + 1) == '=') {
+                    token = new Token(TokenType.EQ, String.valueOf(currentChar) + String.valueOf(input.charAt(position + 1)));
+                    position += 2;
+                } else {
+                    token = new Token(TokenType.ASSING, String.valueOf(currentChar));
+                    position++;
+                }
             } else if (currentChar == '!') {
-                token = new Token(TokenType.NEGATION, String.valueOf(currentChar));
-                position++;
+                if (position + 1 < input.length() && input.charAt(position + 1) == '=') {
+                    token = new Token(TokenType.DIF, String.valueOf(currentChar) + String.valueOf(input.charAt(position + 1)));
+                    position += 2;
+                } else {
+                    token = new Token(TokenType.NEGATION, String.valueOf(currentChar));
+                    position++;
+                }
             } else if (currentChar == '+') {
                 token = new Token(TokenType.PLUS, String.valueOf(currentChar));
                 position++;

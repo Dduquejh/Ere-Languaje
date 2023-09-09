@@ -39,7 +39,9 @@ class PrecedenceHashMap {
         PRECEDENCES.put(TokenType.EQ, Precedence.EQUALS);
         PRECEDENCES.put(TokenType.DIF, Precedence.EQUALS);
         PRECEDENCES.put(TokenType.LT, Precedence.LESSGREATER);
+        PRECEDENCES.put(TokenType.LTE, Precedence.LESSGREATER);
         PRECEDENCES.put(TokenType.GT, Precedence.LESSGREATER);
+        PRECEDENCES.put(TokenType.GTE, Precedence.LESSGREATER);
         PRECEDENCES.put(TokenType.PLUS, Precedence.SUM);
         PRECEDENCES.put(TokenType.MINUS, Precedence.SUM);
         PRECEDENCES.put(TokenType.DIVIDE, Precedence.PRODUCT);
@@ -71,7 +73,9 @@ public class Parser {
         _infixFns.put(TokenType.EQ, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.DIF, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.LT, (InfixParseFn) this::parseInfixExpression);
+        _infixFns.put(TokenType.LTE, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.GT, (InfixParseFn) this::parseInfixExpression);
+        _infixFns.put(TokenType.GTE, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.LPAREN, (InfixParseFn) this::parseCall);
 
         _prefixFns = new HashMap<>();
