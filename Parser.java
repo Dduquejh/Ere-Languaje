@@ -408,12 +408,15 @@ public class Parser {
     }
 
     public Precedence peekPrecedence() {
-        if (peekToken == null)
-            throw new AssertionError("El token actual es nulo");
-        try {
-            return PrecedenceHashMap.PRECEDENCES.get(peekToken.getType());
-        } catch (NullPointerException e) {
+        if (peekToken == null || peekToken.getType() == null) {
+            return Precedence.LOWEST;
+        }
+        Precedence precedence = PrecedenceHashMap.PRECEDENCES.get(peekToken.getType());
+        if (precedence != null) {
+            return precedence;
+        } else {
             return Precedence.LOWEST;
         }
     }
+    
 }
