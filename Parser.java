@@ -338,7 +338,7 @@ public class Parser {
         // Agrega paréntesis alrededor de la expresión binaria.
         String infixExpr = "(" + left.toString() + " " + operator + " " + right.toString() + ")";
         
-        return new Infix(currentToken, infixExpr);
+        return new Infix(currentToken, left, operator, right, infixExpr);
     }
     
     

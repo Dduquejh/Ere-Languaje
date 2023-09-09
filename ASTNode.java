@@ -132,7 +132,7 @@ class ExpressionStatement extends Statement {
         super(token);
         this.expression = expression;
     }
-
+    
     public void setExpression(Expression expression) {
         this.expression = expression;
     }
@@ -140,6 +140,10 @@ class ExpressionStatement extends Statement {
     @Override
     public String toString() {
         return expression != null ? expression.toString() : "null";
+    }
+
+    public Expression getExpression() {
+        return expression;
     }
 }
 
@@ -158,6 +162,10 @@ class IntegerExpression extends Expression {
     @Override
     public String toString() {
         return value != null ? value.toString() : "null";
+    }
+
+    public Integer getValue() {
+        return value;
     }
 }
 
@@ -179,19 +187,45 @@ class Prefix extends Expression {
     public String toString() {
         return operator + " " + right != null ? right.toString() : "null";
     }
+
+    public Expression getRight() {
+        return right;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
 }
 
 class Infix extends Expression {
+    private Expression left;
+    private String operator;
+    private Expression right;
     private String formattedExpression; // Nuevo campo para almacenar la expresión con paréntesis.
 
-    public Infix(Token token, String formattedExpression) {
+    public Infix(Token token, Expression left, String operator, Expression right, String formattedExpression) {
         super(token);
+        this.left = left;
+        this.operator = operator;
+        this.right = right;
         this.formattedExpression = formattedExpression;
     }
 
     @Override
     public String toString() {
         return formattedExpression; // Devuelve la expresión con paréntesis.
+    }
+
+    public Expression getLeft() {
+        return left;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public Expression getRight() {
+        return right;
     }
 }
 
@@ -208,6 +242,11 @@ class BooleanExpression extends Expression {
     public String toString() {
         return value != null ? value.toString() : "null";
     }
+
+    public Boolean getValue() {
+        return value;
+    }
+    
 }
 
 class Block extends Statement {

@@ -26,6 +26,10 @@ class IntegerObject extends CustomObjects {
     public String inspect() {
         return String.valueOf(value);
     }
+
+    public int getValue() {
+        return value;
+    }
 }
 
 class BooleanObject extends CustomObjects {
