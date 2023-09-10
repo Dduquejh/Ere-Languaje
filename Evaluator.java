@@ -71,9 +71,24 @@ public class Evaluator {
     protected Object evaluateInfixExpression(String operator, Object left, Object right){
         if (left instanceof IntegerObject && right instanceof IntegerObject)
             return evaluateIntegerInfixExpression(operator, left, right);
-        else if (operator == "==")
+        else if (left instanceof StringObject && right instanceof StringObject) {
+            String leftValue = ((StringObject) left).getValue();
+            String rightValue = ((StringObject) right).getValue();
+                
+            switch (operator) {
+                case "+":
+                    return new StringObject(leftValue + rightValue);
+                case "==":
+                    return toBooleanObject(leftValue.equals(rightValue));
+                case "!=":
+                    return toBooleanObject(!leftValue.equals(rightValue));
+                default:
+                    return NULL;
+            }
+        }
+        else if (operator.equals("=="))
             return toBooleanObject(left == right);
-        else if (operator == "!=")
+        else if (operator.equals("!="))
             return toBooleanObject(left != right);
         else
             return NULL;
@@ -122,6 +137,18 @@ public class Evaluator {
                 throw new AssertionError("El token actual es nulo");
 
             return evaluateInfixExpression(infix.getOperator(), left, right);
+        }else if (node instanceof Block){
+            Block block = (Block)node;
+            return evaluateStatements(block.getStatements());
+        }else if (node instanceof If){
+            If condition = (If)node;
+            return evaluateIfExpression(condition);
+        }else if (node instanceof StringExpression){
+            StringExpression stringExpression = (StringExpression) node;
+            if (stringExpression.getValue() == null)
+                throw new AssertionError("El token actual es nulo");
+
+            return new StringObject(stringExpression.getValue());
         }else
             return NULL;
     }
@@ -133,5 +160,37 @@ public class Evaluator {
             result = evaluate(statement);
 
         return result;
+    }
+
+    protected boolean isTruthy(Object obj){
+        if (obj == NULL)
+            return false;
+        else if (obj == TRUE)
+            return true;
+        else if (obj == FALSE)
+            return false;
+        else    
+            return true;
+    }
+
+    // No devuelve cuando la consecuencia es un string, solo funciona cuando la consecuencia es un número
+    protected Object evaluateIfExpression(If ifExpression){
+        if(ifExpression == null)
+            throw new AssertionError("El token actual es nulo");
+        Object condition = evaluate(ifExpression.getCondition());
+
+        if(condition == null)
+            throw new AssertionError("El token actual es nulo");
+        if (isTruthy(condition)){
+            if (ifExpression.getConsequense() == null)
+                throw new AssertionError("El token actual es nulo");
+                Object consequenseResult = evaluate(ifExpression.getConsequense());
+                if (consequenseResult instanceof StringObject)
+                    return ((StringObject)consequenseResult).getValue();
+            return evaluate(ifExpression.getConsequense());
+        }else if (ifExpression.getAlternative() != null)
+            return evaluate(ifExpression.getAlternative());
+        else    
+            return NULL;
     }
 }

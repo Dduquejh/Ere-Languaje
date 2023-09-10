@@ -57,3 +57,23 @@ class Null extends CustomObjects {
         return "nulo";
     }
 }
+
+class StringObject extends CustomObjects {
+    String value;
+
+    public StringObject(String value) {
+        this.value = value;
+    }
+
+    public ObjectType type() {
+        return ObjectType.STRING;
+    }
+
+    public String inspect() {
+        return "\"" + value + "\"";
+    }
+    public String getValue() {
+        return value;
+    }
+}
+

@@ -80,6 +80,11 @@ class Identifier extends Expression {
         // TODO Auto-generated method stub
         return value;
     }
+
+    public String getValue() {
+        return value;
+    }
+    
 }
 
 class LetStatement extends Statement {
@@ -305,6 +310,18 @@ class If extends Expression {
 
         return out.toString();
     }
+
+    public Expression getCondition() {
+        return condition;
+    }
+
+    public Block getConsequense() {
+        return consequense;
+    }
+
+    public Block getAlternative() {
+        return alternative;
+    }
 }
 
 class Function extends Expression {
@@ -365,5 +382,27 @@ class Call extends Expression {
             args.append(argument);
         }
         return function.toString() + args;
+    }
+}
+
+class StringExpression extends Expression {
+    private String value;
+
+    public StringExpression(Token token, String value) {
+        super(token);
+        this.value = value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return value != null ? value : "null";
+    }
+
+    public String getValue() {
+        return value;
     }
 }
