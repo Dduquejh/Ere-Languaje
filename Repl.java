@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.List;
+import java.util.Optional;
 
 public class Repl {
     public static void startRepl() {
@@ -17,32 +19,26 @@ public class Repl {
             Parser parser = new Parser(lexer);
 
             Program program = parser.parseProgram(parser);
-            Object evaluated = evaluator.evaluate(program);
+            Environment env = new Environment();
 
-            if (evaluated instanceof CustomObjects) {
-                CustomObjects customObject = (CustomObjects) evaluated;
-                System.out.println(customObject.inspect());
+            if(parser.getErrors().size() > 0){
+                printParseErrors(parser.getErrors());
+                continue;
             }
-            // Token token;
-            // do {
-            //     token = lexer.nextToken();
-            //     if (token != null) {
-            //         System.out.println(token);
-            //         System.out.println(program);
-            //     }
-            //     if (!parser.getErrors().isEmpty()) {
-            //         for (String error : parser.getErrors()) {
-            //             System.out.println(error);
-            //         }
-            //     } else {
-            //         for (Statement statement : program.getStatements()) {
-            //             System.out.println(statement.toString());
-            //         }
-            //     }
-            // } while (token != null && token.getType() != TokenType.EOF);
+
+            Optional<Object> result = evaluator.evaluate(program, env);
+            if (result.isPresent()){
+                CustomObjects evaluated = (CustomObjects) result.get();
+                if (evaluated != null)
+                    System.out.println(evaluated.inspect());
+            }
         }
 
         scanner.close();
     }
-}
 
+    private static void printParseErrors(List<String> errors){
+        for (String error: errors)
+            System.out.println(error);
+    }
+}

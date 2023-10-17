@@ -1,9 +1,11 @@
+import java.util.HashMap;
 enum ObjectType {
     BOOLEAN,
     INTEGER,
     NULL,
     FLOAT,
-    STRING
+    ERROR,
+    RETURN
 }
 
 abstract class CustomObjects {
@@ -58,22 +60,59 @@ class Null extends CustomObjects {
     }
 }
 
-class StringObject extends CustomObjects {
-    String value;
+class ReturnObject extends CustomObjects{
+    Object value;
 
-    public StringObject(String value) {
+    public ReturnObject(Object value) {
         this.value = value;
     }
 
-    public ObjectType type() {
-        return ObjectType.STRING;
+    @Override
+    public String inspect() {
+        return null;
     }
 
-    public String inspect() {
-        return "\"" + value + "\"";
+    @Override
+    public ObjectType type() {
+        return null;
     }
-    public String getValue() {
+
+    public Object getValue() {
         return value;
-    }
+    }    
 }
 
+class Error extends CustomObjects{
+    String message;
+    
+    public Error(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String inspect() {
+        return "Error: "+this.message;
+    }
+
+    @Override
+    public ObjectType type() {
+        return ObjectType.ERROR;
+    }
+    
+}
+class Environment{
+    private HashMap<String, Object> store = new HashMap<>();
+
+    public void set(String key, Object value){
+
+    }
+
+    public void delete(String key){
+        store.remove(key);
+    }
+
+    public Object get(String key) {
+        return store.get(key);
+    }
+
+}

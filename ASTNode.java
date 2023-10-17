@@ -68,7 +68,7 @@ class Program extends ASTNode {
 }
 
 class Identifier extends Expression {
-    private String value;
+    protected String value;
 
     public Identifier(Token token, String value) {
         super(token);
@@ -88,8 +88,8 @@ class Identifier extends Expression {
 }
 
 class LetStatement extends Statement {
-    private Identifier name;
-    private Expression value;
+    protected Identifier name;
+    protected Expression value;
 
     public LetStatement(Token token, Identifier name, Expression value) {
         super(token);
@@ -110,6 +110,14 @@ class LetStatement extends Statement {
         return tokenLiteral() + " " + name != null ? name.toString()
                 : "null" + " = " + value != null ? value.toString() : "null";
     }
+
+    public Identifier getName() {
+        return name;
+    }
+
+    public Expression getValue() {
+        return value;
+    }
 }
 
 class ReturnStatement extends Statement {
@@ -127,6 +135,10 @@ class ReturnStatement extends Statement {
     @Override
     public String toString() {
         return tokenLiteral() + " " + returnValue != null ? returnValue.toString() : "null";
+    }
+
+    public Expression getReturnValue() {
+        return returnValue;
     }
 }
 
