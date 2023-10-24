@@ -2,19 +2,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+
 public class Evaluator {
     private BooleanObject TRUE = new BooleanObject(true);
     private BooleanObject FALSE = new BooleanObject(false);
     private Null NULL = null;
+    String notFunction = ErrorMessages.NOT_A_FUNCTION;
     String typeMismatchMessage = ErrorMessages.TYPE_MISMATCH;
     String unknownPrefixOperatorMessage = ErrorMessages.UNKNOWN_PREFIX_OPERATOR;
     String unknownInfixOperatorMessage = ErrorMessages.UNKNOWN_INFIX_OPERATOR;
     String unknownIdentifierMessage = ErrorMessages.UNKNOWN_IDENTIFIER;
 
-    protected Optional<Object> evaluate(ASTNode node, Environment env) {
+    protected Optional<CustomObjects> evaluate(ASTNode node, Environment env) {
         if (node instanceof Program) {
             Program program = (Program) node;
-            return Optional.of(evaluateProgram(program, env));
+            return evaluateProgram(program, env);
         } else if (node instanceof ExpressionStatement) {
             ExpressionStatement expressionStatement = (ExpressionStatement) node;
             if (expressionStatement.getExpression() == null)
@@ -48,15 +50,15 @@ public class Evaluator {
             if (infix.getLeft() == null || infix.getRight() == null)
                 throw new AssertionError("El token actual es nulo");
 
-            Object left = evaluate(infix.getLeft(), env);
-            Object right = evaluate(infix.getRight(), env);
+            CustomObjects left = evaluate(infix.getLeft(), env).orElse(new DefaultCustomObject());
+            CustomObjects right = evaluate(infix.getRight(), env).orElse(new DefaultCustomObject());
             if (left == null || right == null)
                 throw new AssertionError("El token actual es nulo");
 
             return Optional.of(evaluateInfixExpression(infix.getOperator(), left, right));
         } else if (node instanceof Block) {
             Block block = (Block) node;
-            return Optional.of(evaluateBlockStatement(block, env));
+            return evaluateBlockStatement(block, env);
         } else if (node instanceof If) {
             If condition = (If) node;
             return Optional.of(evaluateIfExpression(condition, env));
@@ -78,20 +80,39 @@ public class Evaluator {
         } else if (node instanceof Identifier) {
             Identifier identifier = (Identifier) node;
             return Optional.of(evaluateIdentifier(identifier, env));
+        }else if (node instanceof Function){
+            Function function = (Function)node;
+            if (function.getBody() == null)
+                throw new AssertionError("El token actual es nulo");
+            return Optional.of(new FunctionObject(function.getParameters(), function.getBody(), env));
+        }else if (node instanceof Call){
+            Call call = (Call)node;
+            Optional<CustomObjects> result = evaluate(call.getFunction(), env);
+            if (result.isPresent() && result.get() instanceof FunctionObject && call.getArguments() != null){
+                FunctionObject function = (FunctionObject)result.get();
+                // List<CustomObjects> args = evaluateExpression(call.getArguments(), env); // Es necesario crear este método también
+            }else{
+                throw new AssertionError("El token actual es nulo");
+            }
+            
+            //return applyFunction(funtion,); // Se debe de crear ese método y eliminar el return null
+            return Optional.empty();  //Cuando se cree el otro método este se elimina
         } else
             return Optional.of(NULL);
     }
 
-    private Optional<Object> evaluateProgram(Program program, Environment env) {
-        Optional<Object> result = Optional.empty();
+    private Optional<CustomObjects> evaluateProgram(Program program, Environment env) {
+        Optional<CustomObjects> result = Optional.empty();
 
         for (Statement statement : program.getStatements()) {
             result = evaluate(statement, env);
 
             if (result.isPresent()) {
-                Object resultValue = result.get();
+                CustomObjects resultValue = result.get();
                 if (resultValue instanceof ReturnObject) {
-                    return Optional.of(((ReturnObject) resultValue).getValue());
+                    Object returnValue = ((ReturnObject) resultValue).getValue();
+                    if (returnValue instanceof CustomObjects) 
+                        return Optional.of((CustomObjects) returnValue);
                 } else if (resultValue instanceof Error) {
                     return Optional.of(resultValue);
                 }
@@ -100,7 +121,7 @@ public class Evaluator {
         return result;
     }
 
-    private Object evaluateBangOperatorExpression(Object right) {
+    private CustomObjects evaluateBangOperatorExpression(Object right) {
         if (right == TRUE)
             return FALSE;
         else if (right == FALSE)
@@ -111,13 +132,13 @@ public class Evaluator {
             return FALSE;
     }
 
-    private Optional<Object> evaluateBlockStatement(Block block, Environment env) {
-        Optional<Object> result = Optional.empty();
+    private Optional<CustomObjects> evaluateBlockStatement(Block block, Environment env) {
+        Optional<CustomObjects> result = Optional.empty();
         for (Statement statement : block.getStatements()) {
-            result = Optional.of(evaluate(statement, env));
+            result = evaluate(statement, env);
 
-            if (result.isPresent()) {
-                Object resultValue = result.get();
+            if (result != null) {
+                CustomObjects resultValue = result.get();
                 if (resultValue instanceof ReturnObject || resultValue instanceof Error)
                     return Optional.of(resultValue);
             }
@@ -125,8 +146,8 @@ public class Evaluator {
         return result;
     }
 
-    private Object evaluateIdentifier(Identifier node, Environment env) {
-        Object value = env.get(node.getValue());
+    private CustomObjects evaluateIdentifier(Identifier node, Environment env) {
+        CustomObjects value = env.get(node.getValue());
     if (value != null) {
         return value;
     } else {
@@ -134,7 +155,7 @@ public class Evaluator {
     }
     }
 
-    private Object evaluateIfExpression(If ifExpression, Environment env) {
+    private CustomObjects evaluateIfExpression(If ifExpression, Environment env) {
         if (ifExpression == null)
             throw new AssertionError("El token actual es nulo");
         Object condition = evaluate(ifExpression.getCondition(), env);
@@ -144,9 +165,9 @@ public class Evaluator {
         if (isTruthy(condition)) {
             if (ifExpression.getConsequense() == null)
                 throw new AssertionError("El token actual es nulo");
-            return evaluate(ifExpression.getConsequense(), env);
+            return evaluate(ifExpression.getConsequense(), env).orElse(new DefaultCustomObject());
         } else if (ifExpression.getAlternative() != null)
-            return evaluate(ifExpression.getAlternative(), env);
+            return evaluate(ifExpression.getAlternative(), env).orElse(new DefaultCustomObject());
         else
             return NULL;
     }
@@ -162,7 +183,7 @@ public class Evaluator {
             return true;
     }
 
-    private Object evaluateInfixExpression(String operator, Object left, Object right) {
+    private CustomObjects evaluateInfixExpression(String operator, Object left, Object right) {
         if (left instanceof IntegerObject && right instanceof IntegerObject)
             return evaluateIntegerInfixExpression(operator, left, right);
         else if (left instanceof IntegerObject && right instanceof IntegerObject) {
@@ -189,7 +210,7 @@ public class Evaluator {
             return newError(ErrorMessages.UNKNOWN_INFIX_OPERATOR, Arrays.asList(left.getClass().getSimpleName(), operator, right.getClass().getSimpleName()));
     }
 
-    private Object evaluateIntegerInfixExpression(String operator, Object left, Object right) {
+    private CustomObjects evaluateIntegerInfixExpression(String operator, Object left, Object right) {
         int leftValue = ((IntegerObject) left).getValue();
         int rightValue = ((IntegerObject) right).getValue();
 
@@ -219,14 +240,14 @@ public class Evaluator {
         }
     }
 
-    private Object evaluateMinusOperatorExpression(Object right) {
+    private CustomObjects evaluateMinusOperatorExpression(Object right) {
         if (!(right instanceof IntegerObject))
             return newError(ErrorMessages.UNKNOWN_PREFIX_OPERATOR, Arrays.asList('-', right.getClass().getSimpleName()));
         IntegerObject integerRight = (IntegerObject) right;
         return new IntegerObject(-integerRight.getValue());
     }
 
-    private Object evaluatePrefixExpression(String operator, Object right) {
+    private CustomObjects evaluatePrefixExpression(String operator, Object right) {
         switch (operator) {
             case "!":
                 return evaluateBangOperatorExpression(right);
@@ -251,6 +272,7 @@ public class Evaluator {
 }
 
 class ErrorMessages {
+    public static final String NOT_A_FUNCTION = "No es una función: {}";
     public static final String TYPE_MISMATCH = "Discrepancia de tipos: {} {} {}";
     public static final String UNKNOWN_PREFIX_OPERATOR = "Operador desconocido: {}{}";
     public static final String UNKNOWN_INFIX_OPERATOR = "Operador desconocido: {} {} {}";

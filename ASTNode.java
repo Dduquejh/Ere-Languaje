@@ -367,7 +367,17 @@ class Function extends Expression {
         }
         return tokenLiteral() + "(" + params + ")" + (body != null ? body.toString() : "null");
     }
+    
+    public Block getBody() {
+        return body;
+    }
+
+    public List<Identifier> getParameters() {
+        return parameters;
+    }
 }
+
+
 
 class Call extends Expression {
     private Expression function;
@@ -395,6 +405,15 @@ class Call extends Expression {
         }
         return function.toString() + args;
     }
+
+    public Expression getFunction() {
+        return function;
+    }
+
+    public List<Expression> getArguments() {
+        return arguments;
+    }
+    
 }
 
 class StringExpression extends Expression {
