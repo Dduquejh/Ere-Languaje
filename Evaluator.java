@@ -1,12 +1,15 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.swing.text.html.Option;
 
 public class Evaluator {
     private BooleanObject TRUE = new BooleanObject(true);
     private BooleanObject FALSE = new BooleanObject(false);
     private Null NULL = null;
+    private List<CustomObjects> args;
     String notFunction = ErrorMessages.NOT_A_FUNCTION;
     String typeMismatchMessage = ErrorMessages.TYPE_MISMATCH;
     String unknownPrefixOperatorMessage = ErrorMessages.UNKNOWN_PREFIX_OPERATOR;
@@ -80,23 +83,20 @@ public class Evaluator {
         } else if (node instanceof Identifier) {
             Identifier identifier = (Identifier) node;
             return Optional.of(evaluateIdentifier(identifier, env));
-        }else if (node instanceof Function){
-            Function function = (Function)node;
+        } else if (node instanceof Function) {
+            Function function = (Function) node;
             if (function.getBody() == null)
                 throw new AssertionError("El token actual es nulo");
             return Optional.of(new FunctionObject(function.getParameters(), function.getBody(), env));
-        }else if (node instanceof Call){
-            Call call = (Call)node;
-            Optional<CustomObjects> result = evaluate(call.getFunction(), env);
-            if (result.isPresent() && result.get() instanceof FunctionObject && call.getArguments() != null){
-                FunctionObject function = (FunctionObject)result.get();
-                // List<CustomObjects> args = evaluateExpression(call.getArguments(), env); // Es necesario crear este método también
-            }else{
+        } else if (node instanceof Call) {
+            Call call = (Call) node;
+            Optional<CustomObjects> function = evaluate(call.getFunction(), env);
+            if (function.isPresent() && function.get() instanceof FunctionObject && call.getArguments() != null) {
+                args = evaluateExpression(call.getArguments(), env);
+            } else {
                 throw new AssertionError("El token actual es nulo");
             }
-            
-            //return applyFunction(funtion,); // Se debe de crear ese método y eliminar el return null
-            return Optional.empty();  //Cuando se cree el otro método este se elimina
+            return Optional.of(applyFunction(function, args));
         } else
             return Optional.of(NULL);
     }
@@ -111,7 +111,7 @@ public class Evaluator {
                 CustomObjects resultValue = result.get();
                 if (resultValue instanceof ReturnObject) {
                     Object returnValue = ((ReturnObject) resultValue).getValue();
-                    if (returnValue instanceof CustomObjects) 
+                    if (returnValue instanceof CustomObjects)
                         return Optional.of((CustomObjects) returnValue);
                 } else if (resultValue instanceof Error) {
                     return Optional.of(resultValue);
@@ -148,11 +148,11 @@ public class Evaluator {
 
     private CustomObjects evaluateIdentifier(Identifier node, Environment env) {
         CustomObjects value = env.get(node.getValue());
-    if (value != null) {
-        return value;
-    } else {
-        return newError(ErrorMessages.UNKNOWN_IDENTIFIER, Arrays.asList(node.getValue()));
-    }
+        if (value != null) {
+            return value;
+        } else {
+            return newError(ErrorMessages.UNKNOWN_IDENTIFIER, Arrays.asList(node.getValue()));
+        }
     }
 
     private CustomObjects evaluateIfExpression(If ifExpression, Environment env) {
@@ -205,9 +205,11 @@ public class Evaluator {
         else if (operator.equals("!="))
             return toBooleanObject(left != right);
         else if (!left.getClass().equals(right.getClass()))
-            return newError(ErrorMessages.TYPE_MISMATCH, Arrays.asList(left.getClass().getSimpleName(), operator, right.getClass().getSimpleName()));
+            return newError(ErrorMessages.TYPE_MISMATCH,
+                    Arrays.asList(left.getClass().getSimpleName(), operator, right.getClass().getSimpleName()));
         else
-            return newError(ErrorMessages.UNKNOWN_INFIX_OPERATOR, Arrays.asList(left.getClass().getSimpleName(), operator, right.getClass().getSimpleName()));
+            return newError(ErrorMessages.UNKNOWN_INFIX_OPERATOR,
+                    Arrays.asList(left.getClass().getSimpleName(), operator, right.getClass().getSimpleName()));
     }
 
     private CustomObjects evaluateIntegerInfixExpression(String operator, Object left, Object right) {
@@ -236,13 +238,15 @@ public class Evaluator {
             case "!=":
                 return toBooleanObject(leftValue != rightValue);
             default:
-                return newError(ErrorMessages.UNKNOWN_INFIX_OPERATOR, Arrays.asList(left.getClass().getSimpleName(), operator, right.getClass().getSimpleName()));
+                return newError(ErrorMessages.UNKNOWN_INFIX_OPERATOR,
+                        Arrays.asList(left.getClass().getSimpleName(), operator, right.getClass().getSimpleName()));
         }
     }
 
     private CustomObjects evaluateMinusOperatorExpression(Object right) {
         if (!(right instanceof IntegerObject))
-            return newError(ErrorMessages.UNKNOWN_PREFIX_OPERATOR, Arrays.asList('-', right.getClass().getSimpleName()));
+            return newError(ErrorMessages.UNKNOWN_PREFIX_OPERATOR,
+                    Arrays.asList('-', right.getClass().getSimpleName()));
         IntegerObject integerRight = (IntegerObject) right;
         return new IntegerObject(-integerRight.getValue());
     }
@@ -254,7 +258,8 @@ public class Evaluator {
             case "-":
                 return evaluateMinusOperatorExpression(right);
             default:
-                return newError(ErrorMessages.UNKNOWN_PREFIX_OPERATOR, Arrays.asList(operator, right.getClass().getSimpleName()));
+                return newError(ErrorMessages.UNKNOWN_PREFIX_OPERATOR,
+                        Arrays.asList(operator, right.getClass().getSimpleName()));
         }
     }
 
@@ -262,12 +267,46 @@ public class Evaluator {
         return value == true ? TRUE : FALSE;
     }
 
-    
-
-    
-
     private Error newError(String message, List<Object> args) {
         return new Error(String.format(message, args.toArray()));
+    }
+
+    private CustomObjects applyFunction(Optional<CustomObjects> function, List<CustomObjects> args) {
+        if (!function.isPresent() || !(function.get() instanceof FunctionObject))
+            return newError(ErrorMessages.NOT_A_FUNCTION, Arrays.asList(function.getClass().getSimpleName()));
+        FunctionObject fn = (FunctionObject) function.get();
+        Environment extendedEnvironment = extendFunctionEnvironment(fn, args);
+        Optional<CustomObjects> evaluated = evaluate(fn.getBody(), extendedEnvironment);
+        if (evaluated.get() == null)
+            throw new AssertionError("El token actual es nulo");
+        return unwrapReturnValue(evaluated);
+    }
+
+    private Environment extendFunctionEnvironment(FunctionObject function, List<CustomObjects> args) {
+        Environment env = new Environment();
+        for (int idx = 0; idx < function.getParameters().size(); idx++) {
+            Identifier param = function.getParameters().get(idx);
+            env.set(param.getValue(), args.get(idx));
+        }
+        return env;
+    }
+
+    public CustomObjects unwrapReturnValue(Optional<CustomObjects> obj) {
+        if (obj.get() instanceof ReturnObject) {
+            ReturnObject returnObject = (ReturnObject) obj.get();
+            return (CustomObjects) returnObject.getValue();
+        }
+        return obj.get();
+    }
+
+    private List<CustomObjects> evaluateExpression(List<Expression> expressions, Environment environment) {
+        List<CustomObjects> result = new ArrayList<>();
+        for (Expression expression : expressions) {
+            Optional<CustomObjects> evaluated = evaluate(expression, environment);
+            if (evaluated.isPresent())
+                result.add(evaluated.get());
+        }
+        return result;
     }
 }
 
@@ -278,4 +317,3 @@ class ErrorMessages {
     public static final String UNKNOWN_INFIX_OPERATOR = "Operador desconocido: {} {} {}";
     public static final String UNKNOWN_IDENTIFIER = "Identificador no encontrado: {}";
 }
-

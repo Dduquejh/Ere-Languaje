@@ -21,13 +21,13 @@ public class Repl {
             Program program = parser.parseProgram(parser);
             Environment env = new Environment();
 
-            if(parser.getErrors().size() > 0){
+            if (parser.getErrors().size() > 0) {
                 printParseErrors(parser.getErrors());
                 continue;
             }
 
-            Optional<Object> result = evaluator.evaluate(program, env);
-            if (result.isPresent()){
+            Optional<CustomObjects> result = evaluator.evaluate(program, env);
+            if (result.isPresent()) {
                 CustomObjects evaluated = (CustomObjects) result.get();
                 if (evaluated != null)
                     System.out.println(evaluated.inspect());
@@ -37,8 +37,8 @@ public class Repl {
         scanner.close();
     }
 
-    private static void printParseErrors(List<String> errors){
-        for (String error: errors)
+    private static void printParseErrors(List<String> errors) {
+        for (String error : errors)
             System.out.println(error);
     }
 }

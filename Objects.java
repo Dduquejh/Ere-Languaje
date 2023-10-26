@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.List;
+
 enum ObjectType {
     BOOLEAN,
     INTEGER,
@@ -16,7 +17,7 @@ abstract class CustomObjects {
     public abstract String inspect();
 }
 
-class DefaultCustomObject extends CustomObjects{
+class DefaultCustomObject extends CustomObjects {
 
     @Override
     public String inspect() {
@@ -27,7 +28,7 @@ class DefaultCustomObject extends CustomObjects{
     public ObjectType type() {
         return null;
     }
-    
+
 }
 
 class IntegerObject extends CustomObjects {
@@ -76,7 +77,7 @@ class Null extends CustomObjects {
     }
 }
 
-class ReturnObject extends CustomObjects{
+class ReturnObject extends CustomObjects {
     Object value;
 
     public ReturnObject(Object value) {
@@ -95,35 +96,36 @@ class ReturnObject extends CustomObjects{
 
     public Object getValue() {
         return value;
-    }    
+    }
 }
 
-class Error extends CustomObjects{
+class Error extends CustomObjects {
     String message;
-    
+
     public Error(String message) {
         this.message = message;
     }
 
     @Override
     public String inspect() {
-        return "Error: "+this.message;
+        return "Error: " + this.message;
     }
 
     @Override
     public ObjectType type() {
         return ObjectType.ERROR;
     }
-    
+
 }
-class Environment{
+
+class Environment {
     private HashMap<String, Object> store = new HashMap<>();
 
-    public void set(String key, Object value){
+    public void set(String key, Object value) {
 
     }
 
-    public void delete(String key){
+    public void delete(String key) {
         store.remove(key);
     }
 
@@ -131,17 +133,16 @@ class Environment{
         Object value = store.get(key);
         if (value instanceof CustomObjects)
             return (CustomObjects) value;
-        else 
-            return null; 
+        else
+            return null;
     }
 }
 
-
-class FunctionObject extends CustomObjects{
-    private List <Identifier> parameters;
+class FunctionObject extends CustomObjects {
+    private List<Identifier> parameters;
     private Block body;
     private Environment env;
-    
+
     public FunctionObject(List<Identifier> parameters, Block body, Environment env) {
         this.parameters = parameters;
         this.body = body;
@@ -160,5 +161,12 @@ class FunctionObject extends CustomObjects{
         return ObjectType.FUNCTION;
     }
 
-    
+    public List<Identifier> getParameters() {
+        return parameters;
+    }
+
+    public Block getBody() {
+        return body;
+    }
+
 }

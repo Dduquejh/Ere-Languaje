@@ -84,7 +84,7 @@ class Identifier extends Expression {
     public String getValue() {
         return value;
     }
-    
+
 }
 
 class LetStatement extends Statement {
@@ -149,7 +149,7 @@ class ExpressionStatement extends Statement {
         super(token);
         this.expression = expression;
     }
-    
+
     public void setExpression(Expression expression) {
         this.expression = expression;
     }
@@ -246,7 +246,6 @@ class Infix extends Expression {
     }
 }
 
-
 class BooleanExpression extends Expression {
     private Boolean value;
 
@@ -263,7 +262,7 @@ class BooleanExpression extends Expression {
     public Boolean getValue() {
         return value;
     }
-    
+
 }
 
 class Block extends Statement {
@@ -367,7 +366,7 @@ class Function extends Expression {
         }
         return tokenLiteral() + "(" + params + ")" + (body != null ? body.toString() : "null");
     }
-    
+
     public Block getBody() {
         return body;
     }
@@ -376,8 +375,6 @@ class Function extends Expression {
         return parameters;
     }
 }
-
-
 
 class Call extends Expression {
     private Expression function;
@@ -413,7 +410,7 @@ class Call extends Expression {
     public List<Expression> getArguments() {
         return arguments;
     }
-    
+
 }
 
 class StringExpression extends Expression {
