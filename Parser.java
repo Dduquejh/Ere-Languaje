@@ -77,6 +77,7 @@ public class Parser {
         _infixFns.put(TokenType.GT, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.GTE, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.LPAREN, (InfixParseFn) this::parseCall);
+        _infixFns.put(TokenType.RPAREN, (InfixParseFn) this::parseCall);
 
         _prefixFns = new HashMap<>();
         _prefixFns.put(TokenType.FALSE, (PrefixParseFn) this::parseBoolean);
@@ -85,6 +86,7 @@ public class Parser {
         _prefixFns.put(TokenType.IF, (PrefixParseFn) this::parseIf);
         _prefixFns.put(TokenType.INTEGER, (PrefixParseFn) this::parseInteger);
         _prefixFns.put(TokenType.LPAREN, (PrefixParseFn) this::parseGroupedExpression);
+        _prefixFns.put(TokenType.RPAREN, (PrefixParseFn) this::parseGroupedExpression);
         _prefixFns.put(TokenType.MINUS, (PrefixParseFn) this::parsePrefixExpression);
         _prefixFns.put(TokenType.NEGATION, (PrefixParseFn) this::parsePrefixExpression);
         _prefixFns.put(TokenType.TRUE, (PrefixParseFn) this::parseBoolean);
@@ -116,6 +118,7 @@ public class Parser {
         if (peekToken == null) {
             peekToken = new Token(TokenType.EOF, "");
         }
+        System.out.println("peektoken: "+peekToken);
         // System.out.println("Current: " + currentToken);
         // System.out.println("Peek: " + peekToken);
     }
@@ -133,6 +136,7 @@ public class Parser {
     public boolean expectedToken(TokenType tokenType) {
         if (peekToken == null)
             throw new AssertionError("El token es nulo");
+        // System.out.println("tokentype: "+ tokenType);
         if (peekToken.getType() == tokenType) {
             advanceTokens();
             return true;
@@ -204,7 +208,7 @@ public class Parser {
     public Expression parseExpression(Precedence precedence) {
         if (currentToken == null)
             throw new AssertionError("El token actual es nulo");
-    
+        // System.out.println(currentToken.getType());
         PrefixParseFn prefixParseFn = _prefixFns.get(currentToken.getType());
     
         if (prefixParseFn == null) {
@@ -310,7 +314,8 @@ public class Parser {
         if (!expectedToken(TokenType.LPAREN))
             return null;
         advanceTokens();
-        ifExpression.setCondition(parseExpression(Precedence.LOWEST));
+        Expression expression = parseExpression(Precedence.LOWEST);
+        ifExpression.setCondition(expression);
         if (!expectedToken(TokenType.RPAREN))
             return null;
         if (!expectedToken(TokenType.LBRACE))
@@ -360,7 +365,7 @@ public class Parser {
         if (currentToken == null)
             throw new AssertionError("El token actual es nulo");
         LetStatement letStatement = new LetStatement(currentToken, null, null);
-        if (!expectedToken(TokenType.IDENT)) // IDENT?
+        if (!expectedToken(TokenType.IDENTIFIER))
             return null;
         letStatement.setName(parseIdentifier(parser));
         if (!expectedToken(TokenType.ASSING))

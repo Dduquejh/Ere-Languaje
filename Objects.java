@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 enum ObjectType {
@@ -119,22 +120,70 @@ class Error extends CustomObjects {
 }
 
 class Environment {
-    private HashMap<String, Object> store = new HashMap<>();
+    // private HashMap<String, CustomObjects> store = new HashMap<>();
+    // // private Environment outer;
 
-    public void set(String key, Object value) {
+    // public Environment() {
+        
+    // }
 
+    // // public Environment(Environment outer) {
+    // //     this.outer = outer;
+    // // }
+
+    // // public Environment getOuter() {
+    // //     return outer;
+    // // }
+
+    // public void set(String key, CustomObjects value) {
+    //     store.put(key, value);
+    // }
+
+    // public void delete(String key) {
+    //     store.remove(key);
+    // }
+
+    // public CustomObjects get(String key) {
+    //     Object value = store.get(key);
+    //     if (value instanceof CustomObjects)
+    //         return (CustomObjects) value;
+    //     else
+    //         return null;
+    // }
+
+    private Map<String, CustomObjects> store;
+    private Environment outer;
+
+    public Environment(Environment outer) {
+        this.store = new HashMap<>();
+        this.outer = outer;
+    }
+
+    public Environment() {
+        this(null); // Llama al constructor con un entorno exterior nulo
+    }
+    public CustomObjects get(String key) {
+        if (store.containsKey(key)) {
+            return store.get(key);
+        }
+        
+        if (outer != null) {
+            return outer.get(key);
+        }
+        
+        throw new RuntimeException("Variable '" + key + "' not found in the environment.");
+    }
+
+    public void set(String key, CustomObjects value) {
+        store.put(key, value);
     }
 
     public void delete(String key) {
-        store.remove(key);
-    }
-
-    public CustomObjects get(String key) {
-        Object value = store.get(key);
-        if (value instanceof CustomObjects)
-            return (CustomObjects) value;
-        else
-            return null;
+        if (store.containsKey(key)) {
+            store.remove(key);
+        } else if (outer != null) {
+            outer.delete(key);
+        }
     }
 }
 
@@ -167,6 +216,10 @@ class FunctionObject extends CustomObjects {
 
     public Block getBody() {
         return body;
+    }
+
+    public Environment getEnv() {
+        return env;
     }
 
 }

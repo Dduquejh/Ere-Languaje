@@ -2,7 +2,6 @@ public class Main {
     public static void main(String[] args) {
         pantallaBienvenida();
         Repl.startRepl();
-        ;
     }
 
     public static void pantallaBienvenida() {

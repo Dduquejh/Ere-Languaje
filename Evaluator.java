@@ -3,8 +3,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
-
 public class Evaluator {
     private BooleanObject TRUE = new BooleanObject(true);
     private BooleanObject FALSE = new BooleanObject(false);
@@ -69,13 +67,13 @@ public class Evaluator {
             ReturnStatement returnStatement = (ReturnStatement) node;
             if (returnStatement.getReturnValue() == null)
                 throw new AssertionError("El token actual es nulo");
-            Object value = evaluate(returnStatement.getReturnValue(), env);
+            CustomObjects value = evaluate(returnStatement.getReturnValue(), env).get();
             return Optional.of((ReturnObject) value);
         } else if (node instanceof LetStatement) {
             LetStatement letStatement = (LetStatement) node;
             if (letStatement.getValue() == null)
                 throw new AssertionError("El token actual es nulo");
-            Object value = evaluate(letStatement.getValue(), env);
+            CustomObjects value = evaluate(letStatement.getValue(), env).get();
             if (letStatement.getName() == null)
                 throw new AssertionError("El token actual es nulo");
             env.set(letStatement.name.value, value);
@@ -283,7 +281,7 @@ public class Evaluator {
     }
 
     private Environment extendFunctionEnvironment(FunctionObject function, List<CustomObjects> args) {
-        Environment env = new Environment();
+        Environment env = new Environment(function.getEnv());
         for (int idx = 0; idx < function.getParameters().size(); idx++) {
             Identifier param = function.getParameters().get(idx);
             env.set(param.getValue(), args.get(idx));

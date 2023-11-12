@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Repl {
+    static Environment env = new Environment();
     public static void startRepl() {
         Scanner scanner = new Scanner(System.in);
         Evaluator evaluator = new Evaluator();
@@ -19,7 +20,6 @@ public class Repl {
             Parser parser = new Parser(lexer);
 
             Program program = parser.parseProgram(parser);
-            Environment env = new Environment();
 
             if (parser.getErrors().size() > 0) {
                 printParseErrors(parser.getErrors());
