@@ -156,8 +156,11 @@ public class Evaluator {
     private CustomObjects evaluateIfExpression(If ifExpression, Environment env) {
         if (ifExpression == null)
             throw new AssertionError("El token actual es nulo");
-        Object condition = evaluate(ifExpression.getCondition(), env);
-
+        CustomObjects condition = null;
+        Optional<CustomObjects> conditional = evaluate(ifExpression.getCondition(), env);
+        if (conditional.isPresent() && conditional.get() instanceof CustomObjects) {
+            condition = conditional.get();
+        }
         if (condition == null)
             throw new AssertionError("El token actual es nulo");
         if (isTruthy(condition)) {
