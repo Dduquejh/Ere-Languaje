@@ -77,7 +77,6 @@ public class Parser {
         _infixFns.put(TokenType.GT, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.GTE, (InfixParseFn) this::parseInfixExpression);
         _infixFns.put(TokenType.LPAREN, (InfixParseFn) this::parseCall);
-        _infixFns.put(TokenType.RPAREN, (InfixParseFn) this::parseCall);
 
         _prefixFns = new HashMap<>();
         _prefixFns.put(TokenType.FALSE, (PrefixParseFn) this::parseBoolean);
@@ -86,7 +85,6 @@ public class Parser {
         _prefixFns.put(TokenType.IF, (PrefixParseFn) this::parseIf);
         _prefixFns.put(TokenType.INTEGER, (PrefixParseFn) this::parseInteger);
         _prefixFns.put(TokenType.LPAREN, (PrefixParseFn) this::parseGroupedExpression);
-        _prefixFns.put(TokenType.RPAREN, (PrefixParseFn) this::parseGroupedExpression);
         _prefixFns.put(TokenType.MINUS, (PrefixParseFn) this::parsePrefixExpression);
         _prefixFns.put(TokenType.NEGATION, (PrefixParseFn) this::parsePrefixExpression);
         _prefixFns.put(TokenType.TRUE, (PrefixParseFn) this::parseBoolean);
@@ -118,9 +116,6 @@ public class Parser {
         if (peekToken == null) {
             peekToken = new Token(TokenType.EOF, "");
         }
-        System.out.println("peektoken: "+peekToken);
-        // System.out.println("Current: " + currentToken);
-        // System.out.println("Peek: " + peekToken);
     }
 
     public Precedence currentPrecedence() {
@@ -136,7 +131,6 @@ public class Parser {
     public boolean expectedToken(TokenType tokenType) {
         if (peekToken == null)
             throw new AssertionError("El token es nulo");
-        // System.out.println("tokentype: "+ tokenType);
         if (peekToken.getType() == tokenType) {
             advanceTokens();
             return true;
@@ -208,38 +202,35 @@ public class Parser {
     public Expression parseExpression(Precedence precedence) {
         if (currentToken == null)
             throw new AssertionError("El token actual es nulo");
-        // System.out.println(currentToken.getType());
         PrefixParseFn prefixParseFn = _prefixFns.get(currentToken.getType());
-    
+
         if (prefixParseFn == null) {
             String message = "No se encontró ninguna función para analizar " + currentToken.TokenLiteral();
             errors.add(message);
             return null;
         }
-    
+
         Expression leftExpression = prefixParseFn.prefixParseFn(this);
-    
-        // En lugar de un bucle while, utilizamos un bucle for para garantizar el orden correcto.
-        // Esto tiene en cuenta las precedencias de los operadores.
-        while (precedence.getValue() < peekPrecedence().getValue()) {
+
+        if (peekToken == null)
+            throw new AssertionError("El token es nulo");
+
+        while (!(peekToken.getType() == TokenType.SEMICOLON) && precedence.getValue() < peekPrecedence().getValue()) {
             InfixParseFn infixParseFn = _infixFns.get(peekToken.getType());
-    
+
             if (infixParseFn == null) {
                 return leftExpression;
             }
-    
-            Precedence currentPrecedence = peekPrecedence();
-            
-            // Verificamos si la precedencia del operador siguiente es mayor o igual a la actual.
-            // Si es mayor, avanzamos y creamos una nueva expresión binaria.
-            if (currentPrecedence.getValue() > precedence.getValue()) {
-                advanceTokens();
-                leftExpression = parseInfixExpression(this, leftExpression);
-            } else {
-                return leftExpression;
-            }
+
+            advanceTokens();
+
+            if (leftExpression == null)
+                throw new AssertionError("leftExpression es nulo");
+
+            leftExpression = infixParseFn.infixParseFn(this, leftExpression);
+
         }
-    
+
         return leftExpression;
     }
 
@@ -339,14 +330,12 @@ public class Parser {
         Precedence precedence = currentPrecedence();
         advanceTokens();
         Expression right = parseExpression(precedence);
-    
+
         // Agrega paréntesis alrededor de la expresión binaria.
         String infixExpr = "(" + left.toString() + " " + operator + " " + right.toString() + ")";
-        
+
         return new Infix(currentToken, left, operator, right, infixExpr);
     }
-    
-    
 
     public IntegerExpression parseInteger(Parser parser) {
         if (currentToken == null)
@@ -423,5 +412,5 @@ public class Parser {
             return Precedence.LOWEST;
         }
     }
-    
+
 }

@@ -120,37 +120,6 @@ class Error extends CustomObjects {
 }
 
 class Environment {
-    // private HashMap<String, CustomObjects> store = new HashMap<>();
-    // // private Environment outer;
-
-    // public Environment() {
-        
-    // }
-
-    // // public Environment(Environment outer) {
-    // //     this.outer = outer;
-    // // }
-
-    // // public Environment getOuter() {
-    // //     return outer;
-    // // }
-
-    // public void set(String key, CustomObjects value) {
-    //     store.put(key, value);
-    // }
-
-    // public void delete(String key) {
-    //     store.remove(key);
-    // }
-
-    // public CustomObjects get(String key) {
-    //     Object value = store.get(key);
-    //     if (value instanceof CustomObjects)
-    //         return (CustomObjects) value;
-    //     else
-    //         return null;
-    // }
-
     private Map<String, CustomObjects> store;
     private Environment outer;
 
@@ -162,15 +131,16 @@ class Environment {
     public Environment() {
         this(null); // Llama al constructor con un entorno exterior nulo
     }
+
     public CustomObjects get(String key) {
         if (store.containsKey(key)) {
             return store.get(key);
         }
-        
+
         if (outer != null) {
             return outer.get(key);
         }
-        
+
         throw new RuntimeException("Variable '" + key + "' not found in the environment.");
     }
 
